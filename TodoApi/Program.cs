@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TodoApi.AutoMapper;
 using TodoApi.Models;
 using TodoApi.Repositories;
 using TodoApi.Services;
@@ -16,6 +17,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<TodoItemsService>();
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+
+builder.Services.AddAutoMapper(typeof(ConfigurationMapping));
 
 var app = builder.Build();
 

@@ -82,9 +82,9 @@ namespace TodoApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoItem(long id)
         {
-            var response = _todoItemsService.DeleteTodoItem(id);
-            if (response == null)
-            {
+            try {
+                _todoItemsService.DeleteTodoItem(id);
+            } catch (Exception) {
                 return NotFound();
             }
 

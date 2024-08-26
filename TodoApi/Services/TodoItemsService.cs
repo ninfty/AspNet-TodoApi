@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 using TodoApi.DTOs;
 using TodoApi.Models;
@@ -9,16 +10,18 @@ namespace TodoApi.Services
     public class TodoItemsService
     {
         private ITodoRepository _todoRepository;
+        private IMapper _mapper;
 
-        public TodoItemsService(ITodoRepository todoRepository)
+        public TodoItemsService(ITodoRepository todoRepository, IMapper mapper)
         {
             _todoRepository = todoRepository;
+            _mapper = mapper;
         }
 
         public List<TodoDTO> ListTodoItems()
         {
             return _todoRepository.GetAll()
-                .Select(x => ToDTO(x))
+                .Select(x => _mapper.Map<TodoDTO>(x))
                 .ToList();
         }
 
@@ -30,14 +33,14 @@ namespace TodoApi.Services
                 throw new Exception("Not found");
             }
 
-            return ToDTO(todoItem);
+            return _mapper.Map<TodoDTO>(todoItem);
         }
 
         public void UpdateTodoItem(long id, TodoDTO todoDTO)
         {
             try
             {
-                _todoRepository.Update(id, ToEntity(todoDTO));
+                _todoRepository.Update(id, _mapper.Map<TodoItem>(todoDTO));
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -52,7 +55,7 @@ namespace TodoApi.Services
                 Name = todoDTO.Name
             });
 
-            return ToDTO(todoItem);
+            return _mapper.Map<TodoDTO>(todoItem);
         }
 
         public bool? DeleteTodoItem(long id)
@@ -66,23 +69,5 @@ namespace TodoApi.Services
             return true;
         }
 
-        private static TodoDTO ToDTO(TodoItem todoItem)
-        {
-            return new TodoDTO
-            {
-                Id = todoItem.Id,
-                Name = todoItem.Name,
-                IsComplete = todoItem.IsComplete
-            };
-        }
-        private static TodoItem ToEntity(TodoDTO todoItemDTO)
-        {
-            return new TodoItem
-            {
-                Id = todoItemDTO.Id,
-                Name = todoItemDTO.Name,
-                IsComplete = todoItemDTO.IsComplete
-            };
-        }
     }
 }
