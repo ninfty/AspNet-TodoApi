@@ -2,53 +2,44 @@
 using System.Reflection.Metadata.Ecma335;
 using TodoApi.DTOs;
 using TodoApi.Models;
+using TodoApi.Repositories;
 
 namespace TodoApi.Services
 {
     public class TodoItemsService
     {
-        private TodoContext _context;
+        private ITodoRepository _todoRepository;
 
-        public TodoItemsService(TodoContext context)
+        public TodoItemsService(ITodoRepository todoRepository)
         {
-            _context = context;
+            _todoRepository = todoRepository;
         }
 
         public List<TodoItemDTO> ListTodoItems()
         {
-            return _context.TodoItems
-                .Select(x => ItemToDTO(x))
+            return _todoRepository.GetAll()
+                .Select(x => ToDTO(x))
                 .ToList();
         }
 
         public TodoItemDTO? FindTodoItem(long id)
         {
-            var todoItem = _context.TodoItems.Find(id);
+            var todoItem = _todoRepository.GetById(id);
 
-            if (todoItem == null)
-            {
-                return null;
+            if (todoItem == null) {
+                throw new Exception("Not found");
             }
 
-            return ItemToDTO(todoItem);
+            return ToDTO(todoItem);
         }
 
         public void UpdateTodoItem(long id, TodoItemDTO todoDTO)
         {
-            var todoItem = _context.TodoItems.Find(id);
-            if (todoItem == null)
-            {
-                throw new Exception("Not found");
-            }
-
-            todoItem.Name = todoDTO.Name;
-            todoItem.IsComplete = todoDTO.IsComplete;
-
             try
             {
-                _context.SaveChanges();
+                _todoRepository.Update(id, ToEntity(todoDTO));
             }
-            catch (DbUpdateConcurrencyException) when (!TodoItemExists(id))
+            catch (DbUpdateConcurrencyException)
             {
                 throw;
             }
@@ -56,44 +47,42 @@ namespace TodoApi.Services
 
         public TodoItemDTO CreateTodoItem(TodoItemDTO todoDTO)
         {
-            var todoItem = new TodoItem
-            {
+            var todoItem = _todoRepository.Insert(new TodoItem {
                 IsComplete = todoDTO.IsComplete,
                 Name = todoDTO.Name
-            };
+            });
 
-            _context.TodoItems.Add(todoItem);
-            //await _context.SaveChangesAsync();
-            _context.SaveChanges();
-
-            return ItemToDTO(todoItem);
+            return ToDTO(todoItem);
         }
 
         public bool? DeleteTodoItem(long id)
         {
-            var todoItem =  _context.TodoItems.Find(id);
-            if (todoItem == null)
-            {
-                return null;
-            }
+            var deleted =  _todoRepository.Delete(id);
 
-            _context.TodoItems.Remove(todoItem);
-            _context.SaveChanges();
+            if (!deleted) {
+                throw new Exception("Not found");
+            }
 
             return true;
         }
 
-        private bool TodoItemExists(long id)
+        private static TodoItemDTO ToDTO(TodoItem todoItem)
         {
-            return _context.TodoItems.Any(e => e.Id == id);
+            return new TodoItemDTO
+            {
+                Id = todoItem.Id,
+                Name = todoItem.Name,
+                IsComplete = todoItem.IsComplete
+            };
         }
-
-        private static TodoItemDTO ItemToDTO(TodoItem todoItem) =>
-           new TodoItemDTO
-           {
-               Id = todoItem.Id,
-               Name = todoItem.Name,
-               IsComplete = todoItem.IsComplete
-           };
+        private static TodoItem ToEntity(TodoItemDTO todoItemDTO)
+        {
+            return new TodoItem
+            {
+                Id = todoItemDTO.Id,
+                Name = todoItemDTO.Name,
+                IsComplete = todoItemDTO.IsComplete
+            };
+        }
     }
 }
