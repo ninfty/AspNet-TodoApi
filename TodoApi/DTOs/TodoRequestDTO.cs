@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using TodoApi.Models;
 
 namespace TodoApi.DTOs
 {
-    public class TodoDTO
+    public class TodoRequestDTO
     {
-        public Guid Id { get; set; }
         [Required]
-        public string? Name { get; set; }
+        public string Name { get; set; }
+        [Required]
         public bool IsComplete { get; set; }
     }
 }

@@ -27,22 +27,22 @@ namespace TodoApi.Controllers
 
         // GET: api/TodoItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoDTO>>> GetTodoItems()
+        public async Task<ActionResult<IEnumerable<TodoResponseDTO>>> GetTodoItems()
         {
             return _todoItemsService.ListTodoItems()
-                .Select(x => _mapper.Map<TodoDTO>(x))
+                .Select(x => _mapper.Map<TodoResponseDTO>(x))
                 .ToList();
         }
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoDTO>> GetTodoItem(Guid id)
+        public async Task<ActionResult<TodoResponseDTO>> GetTodoItem(Guid id)
         {
             try
             {
-                var todo = _todoItemsService.FindTodoItem(id);
-
-                return _mapper.Map<TodoDTO>(todo);
+                return _mapper.Map<TodoResponseDTO>(
+                    _todoItemsService.FindTodoItem(id)
+                );
             } catch (Exception) {
                 return NotFound();
             }
@@ -51,16 +51,11 @@ namespace TodoApi.Controllers
         // PUT: api/TodoItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(Guid id, TodoDTO todoDTO)
+        public async Task<IActionResult> PutTodoItem(Guid id, TodoRequestDTO todoRequestDTO)
         {
-            if (id != todoDTO.Id)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                _todoItemsService.UpdateTodoItem(id, _mapper.Map<Todo>(todoDTO));
+                _todoItemsService.UpdateTodoItem(id, _mapper.Map<Todo>(todoRequestDTO));
             }
             catch (Exception)
             {
@@ -73,14 +68,14 @@ namespace TodoApi.Controllers
         // POST: api/TodoItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TodoDTO>> PostTodoItem(TodoDTO todoDTO)
+        public async Task<ActionResult<TodoResponseDTO>> PostTodoItem(TodoRequestDTO todoRequestDTO)
         {
-            var todo = _todoItemsService.CreateTodoItem(_mapper.Map<Todo>(todoDTO));
+            var todo = _todoItemsService.CreateTodoItem(_mapper.Map<Todo>(todoRequestDTO));
 
             return CreatedAtAction(
                 nameof(GetTodoItem),
                 new { id = todo.Id },
-                _mapper.Map<TodoDTO>(todo)
+                _mapper.Map<TodoResponseDTO>(todo)
             );
         }
 
