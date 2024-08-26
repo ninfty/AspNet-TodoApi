@@ -11,7 +11,7 @@ namespace TodoApi.Repositories
             _context = context;
         }
 
-        public bool Delete(long id)
+        public bool Delete(Guid id)
         {
             var todoItem = _context.TodoItems.Find(id);
 
@@ -25,17 +25,17 @@ namespace TodoApi.Repositories
             return true;
         }
 
-        public IEnumerable<TodoItem> GetAll()
+        public IEnumerable<Todo> GetAll()
         {
             return _context.TodoItems.ToList();
         }
 
-        public TodoItem? GetById(long id)
+        public Todo? GetById(Guid id)
         {
             return _context.TodoItems.Find(id);
         }
 
-        public TodoItem Insert(TodoItem todoItem)
+        public Todo Insert(Todo todoItem)
         {
             _context.TodoItems.Add(todoItem);
             _context.SaveChanges();
@@ -43,7 +43,7 @@ namespace TodoApi.Repositories
             return todoItem;
         }
 
-        public TodoItem? Update(long id, TodoItem fields)
+        public Todo? Update(Guid id, Todo fields)
         {
             var todoItem = _context.TodoItems.Find(id);
 

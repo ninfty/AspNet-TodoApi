@@ -4,10 +4,10 @@ namespace TodoApi.Repositories
 {
     public interface ITodoRepository
     {
-        public TodoItem Insert(TodoItem item);
-        public TodoItem? Update(long id, TodoItem item);
-        public bool Delete(long id);
-        public TodoItem? GetById(long id);
-        public IEnumerable<TodoItem> GetAll();
+        public Todo Insert(Todo item);
+        public Todo? Update(Guid id, Todo item);
+        public bool Delete(Guid id);
+        public Todo? GetById(Guid id);
+        public IEnumerable<Todo> GetAll();
     }
 }

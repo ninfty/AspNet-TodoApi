@@ -8,7 +8,7 @@ namespace TodoApi.AutoMapper
     {
         public ConfigurationMapping()
         {
-            CreateMap<TodoItem, TodoDTO>().ReverseMap();
+            CreateMap<Todo, TodoDTO>().ReverseMap();
         }
     }
 }

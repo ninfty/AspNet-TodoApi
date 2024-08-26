@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,40 +14,44 @@ namespace TodoApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TodoItemsController : ControllerBase
+    public class TodoController : ControllerBase
     {
-        private readonly TodoItemsService _todoItemsService;
+        private readonly ITodoService _todoItemsService;
+        private IMapper _mapper;
 
-        public TodoItemsController(TodoItemsService todoItemsService)
+        public TodoController(ITodoService todoItemsService, IMapper mapper)
         {
             _todoItemsService = todoItemsService;
+            _mapper = mapper;
         }
 
         // GET: api/TodoItems
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoDTO>>> GetTodoItems()
         {
-            return _todoItemsService.ListTodoItems();
+            return _todoItemsService.ListTodoItems()
+                .Select(x => _mapper.Map<TodoDTO>(x))
+                .ToList();
         }
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoDTO>> GetTodoItem(long id)
+        public async Task<ActionResult<TodoDTO>> GetTodoItem(Guid id)
         {
-            var todoItem = _todoItemsService.FindTodoItem(id);
-
-            if (todoItem == null)
+            try
             {
+                var todo = _todoItemsService.FindTodoItem(id);
+
+                return _mapper.Map<TodoDTO>(todo);
+            } catch (Exception) {
                 return NotFound();
             }
-
-            return todoItem;
         }
 
         // PUT: api/TodoItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoDTO todoDTO)
+        public async Task<IActionResult> PutTodoItem(Guid id, TodoDTO todoDTO)
         {
             if (id != todoDTO.Id)
             {
@@ -55,7 +60,7 @@ namespace TodoApi.Controllers
 
             try
             {
-                _todoItemsService.UpdateTodoItem(id, todoDTO);
+                _todoItemsService.UpdateTodoItem(id, _mapper.Map<Todo>(todoDTO));
             }
             catch (Exception)
             {
@@ -70,17 +75,18 @@ namespace TodoApi.Controllers
         [HttpPost]
         public async Task<ActionResult<TodoDTO>> PostTodoItem(TodoDTO todoDTO)
         {
-            var todoItem = _todoItemsService.CreateTodoItem(todoDTO);
+            var todo = _todoItemsService.CreateTodoItem(_mapper.Map<Todo>(todoDTO));
 
             return CreatedAtAction(
                 nameof(GetTodoItem),
-                new { id = todoItem.Id },
-                todoItem);
+                new { id = todo.Id },
+                _mapper.Map<TodoDTO>(todo)
+            );
         }
 
         // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTodoItem(long id)
+        public async Task<IActionResult> DeleteTodoItem(Guid id)
         {
             try {
                 _todoItemsService.DeleteTodoItem(id);

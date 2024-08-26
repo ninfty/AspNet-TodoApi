@@ -15,7 +15,7 @@ builder.Services.AddDbContext<TodoContext>(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<TodoItemsService>();
+builder.Services.AddScoped<ITodoService, TodoService>();
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 
 builder.Services.AddAutoMapper(typeof(ConfigurationMapping));
