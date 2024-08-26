@@ -24,14 +24,14 @@ namespace TodoApi.Controllers
 
         // GET: api/TodoItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
+        public async Task<ActionResult<IEnumerable<TodoDTO>>> GetTodoItems()
         {
             return _todoItemsService.ListTodoItems();
         }
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
+        public async Task<ActionResult<TodoDTO>> GetTodoItem(long id)
         {
             var todoItem = _todoItemsService.FindTodoItem(id);
 
@@ -46,7 +46,7 @@ namespace TodoApi.Controllers
         // PUT: api/TodoItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItemDTO todoDTO)
+        public async Task<IActionResult> PutTodoItem(long id, TodoDTO todoDTO)
         {
             if (id != todoDTO.Id)
             {
@@ -68,7 +68,7 @@ namespace TodoApi.Controllers
         // POST: api/TodoItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TodoItemDTO>> PostTodoItem(TodoItemDTO todoDTO)
+        public async Task<ActionResult<TodoDTO>> PostTodoItem(TodoDTO todoDTO)
         {
             var todoItem = _todoItemsService.CreateTodoItem(todoDTO);
 

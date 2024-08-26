@@ -1,6 +1,8 @@
-﻿namespace TodoApi.DTOs
+﻿using TodoApi.Models;
+
+namespace TodoApi.DTOs
 {
-    public class TodoItemDTO
+    public class TodoDTO
     {
         public long Id { get; set; }
         public string? Name { get; set; }

@@ -15,14 +15,14 @@ namespace TodoApi.Services
             _todoRepository = todoRepository;
         }
 
-        public List<TodoItemDTO> ListTodoItems()
+        public List<TodoDTO> ListTodoItems()
         {
             return _todoRepository.GetAll()
                 .Select(x => ToDTO(x))
                 .ToList();
         }
 
-        public TodoItemDTO? FindTodoItem(long id)
+        public TodoDTO? FindTodoItem(long id)
         {
             var todoItem = _todoRepository.GetById(id);
 
@@ -33,7 +33,7 @@ namespace TodoApi.Services
             return ToDTO(todoItem);
         }
 
-        public void UpdateTodoItem(long id, TodoItemDTO todoDTO)
+        public void UpdateTodoItem(long id, TodoDTO todoDTO)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace TodoApi.Services
             }
         }
 
-        public TodoItemDTO CreateTodoItem(TodoItemDTO todoDTO)
+        public TodoDTO CreateTodoItem(TodoDTO todoDTO)
         {
             var todoItem = _todoRepository.Insert(new TodoItem {
                 IsComplete = todoDTO.IsComplete,
@@ -66,16 +66,16 @@ namespace TodoApi.Services
             return true;
         }
 
-        private static TodoItemDTO ToDTO(TodoItem todoItem)
+        private static TodoDTO ToDTO(TodoItem todoItem)
         {
-            return new TodoItemDTO
+            return new TodoDTO
             {
                 Id = todoItem.Id,
                 Name = todoItem.Name,
                 IsComplete = todoItem.IsComplete
             };
         }
-        private static TodoItem ToEntity(TodoItemDTO todoItemDTO)
+        private static TodoItem ToEntity(TodoDTO todoItemDTO)
         {
             return new TodoItem
             {
