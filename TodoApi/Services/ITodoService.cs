@@ -4,10 +4,10 @@ namespace TodoApi.Services
 {
     public interface ITodoService
     {
-        public IEnumerable<Todo> ListTodoItems();
-        public Todo FindTodoItem(Guid id);
-        public void UpdateTodoItem(Guid id, Todo todo);
-        public Todo CreateTodoItem(Todo todo);
-        public bool DeleteTodoItem(Guid id);
+        public Task<List<Todo>> ListTodoItems();
+        public Task<Todo> FindTodoItem(Guid id);
+        public Task CreateTodoItem(Todo todo);
+        public Task UpdateTodoItem(Guid id, Todo todo);
+        public Task DeleteTodoItem(Guid id);
     }
 }

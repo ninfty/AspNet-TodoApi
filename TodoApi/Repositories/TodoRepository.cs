@@ -1,4 +1,6 @@
-﻿using TodoApi.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using TodoApi.Exceptions;
+using TodoApi.Models;
 
 namespace TodoApi.Repositories
 {
@@ -11,52 +13,50 @@ namespace TodoApi.Repositories
             _context = context;
         }
 
-        public bool Delete(Guid id)
+        public async Task<List<Todo>> GetAll()
         {
-            var todoItem = _context.TodoItems.Find(id);
+            return await _context.TodoItems.ToListAsync();
+        }
 
-            if (todoItem == null) {
-                return false;
+        public async Task<Todo?> GetById(Guid id)
+        {
+            return await _context.TodoItems.FindAsync(id);
+        }
+
+        public async Task Insert(Todo todo)
+        {
+            await _context.TodoItems.AddAsync(todo);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Update(Guid id, Todo fields)
+        {
+            var todo = await _context.TodoItems.FindAsync(id);
+
+            if (todo is null) {
+                throw new TodoNotFoundException();
             }
 
-            _context.TodoItems.Remove(todoItem);
+            todo.Name = fields.Name;
+            todo.IsComplete = fields.IsComplete;
+
             _context.SaveChanges();
-
-            return true;
         }
 
-        public IEnumerable<Todo> GetAll()
+        public async Task Delete(Guid id)
         {
-            return _context.TodoItems.ToList();
-        }
+            var todo = await _context.TodoItems.FindAsync(id);
 
-        public Todo? GetById(Guid id)
-        {
-            return _context.TodoItems.Find(id);
-        }
-
-        public Todo Insert(Todo todoItem)
-        {
-            _context.TodoItems.Add(todoItem);
-            _context.SaveChanges();
-
-            return todoItem;
-        }
-
-        public Todo? Update(Guid id, Todo fields)
-        {
-            var todoItem = _context.TodoItems.Find(id);
-
-            if (todoItem == null) {
-                return null;
+            if (todo == null)
+            {
+                throw new TodoNotFoundException();
             }
 
-            todoItem.Name = fields.Name;
-            todoItem.IsComplete = fields.IsComplete;
+            _context.TodoItems.Remove(todo);
+            //_context.TodoItems.RemoveRange(_context.TodoItems.Where(c => c.Id == id));
+            await _context.SaveChangesAsync();
 
-            _context.SaveChanges();
-
-            return todoItem;
+            //await _context.TodoItems.Where(c => c.Id == id).ExecuteDeleteAsync();
         }
     }
 }

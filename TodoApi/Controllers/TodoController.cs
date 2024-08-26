@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using TodoApi.DTOs;
 using TodoApi.Models;
 using TodoApi.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TodoApi.Controllers
 {
@@ -29,9 +30,11 @@ namespace TodoApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoResponseDTO>>> GetTodoItems()
         {
-            return _todoItemsService.ListTodoItems()
-                .Select(x => _mapper.Map<TodoResponseDTO>(x))
-                .ToList();
+            //return (await _todoItemsService.ListTodoItems()).Select(x => _mapper.Map<TodoResponseDTO>(x)).ToList();
+
+            var todos = await _todoItemsService.ListTodoItems();
+
+            return Ok(_mapper.Map<List<TodoResponseDTO>>(todos));
         }
 
         // GET: api/TodoItems/5
@@ -41,7 +44,7 @@ namespace TodoApi.Controllers
             try
             {
                 return _mapper.Map<TodoResponseDTO>(
-                    _todoItemsService.FindTodoItem(id)
+                   await _todoItemsService.FindTodoItem(id)
                 );
             } catch (Exception) {
                 return NotFound();
@@ -53,16 +56,14 @@ namespace TodoApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(Guid id, TodoRequestDTO todoRequestDTO)
         {
-            try
-            {
-                _todoItemsService.UpdateTodoItem(id, _mapper.Map<Todo>(todoRequestDTO));
+            try {
+                await _todoItemsService.UpdateTodoItem(id, _mapper.Map<Todo>(todoRequestDTO));
+
+                return NoContent();
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 return NotFound();
             }
-
-            return NoContent();
         }
 
         // POST: api/TodoItems
@@ -70,7 +71,9 @@ namespace TodoApi.Controllers
         [HttpPost]
         public async Task<ActionResult<TodoResponseDTO>> PostTodoItem(TodoRequestDTO todoRequestDTO)
         {
-            var todo = _todoItemsService.CreateTodoItem(_mapper.Map<Todo>(todoRequestDTO));
+            var todo = _mapper.Map<Todo>(todoRequestDTO);
+
+            await _todoItemsService.CreateTodoItem(todo);
 
             return CreatedAtAction(
                 nameof(GetTodoItem),
@@ -84,7 +87,7 @@ namespace TodoApi.Controllers
         public async Task<IActionResult> DeleteTodoItem(Guid id)
         {
             try {
-                _todoItemsService.DeleteTodoItem(id);
+                await _todoItemsService.DeleteTodoItem(id);
             } catch (Exception) {
                 return NotFound();
             }

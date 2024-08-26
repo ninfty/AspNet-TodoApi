@@ -15,50 +15,35 @@ namespace TodoApi.Services
             _todoRepository = todoRepository;
         }
 
-        public IEnumerable<Todo> ListTodoItems()
+        public async Task<List<Todo>> ListTodoItems()
         {
-            return _todoRepository.GetAll();
+            return await _todoRepository.GetAll();
         }
 
-        public Todo FindTodoItem(Guid id)
+        public async Task<Todo> FindTodoItem(Guid id)
         {
-            var todo = _todoRepository.GetById(id);
+            var todo = await _todoRepository.GetById(id);
 
             if (todo == null) {
-                throw new TodoNotFoundException("Not found");
+                throw new TodoNotFoundException();
             }
 
             return todo;
         }
 
-        public void UpdateTodoItem(Guid id, Todo todo)
+        public async Task CreateTodoItem(Todo todo)
         {
-            try
-            {
-                _todoRepository.Update(id, todo);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
+            await _todoRepository.Insert(todo);
         }
 
-        public Todo CreateTodoItem(Todo todo)
+        public async Task UpdateTodoItem(Guid id, Todo todo)
         {
-            _todoRepository.Insert(todo);
-
-            return todo;
+            await _todoRepository.Update(id, todo);
         }
 
-        public bool DeleteTodoItem(Guid id)
+        public async Task DeleteTodoItem(Guid id)
         {
-            var deleted =  _todoRepository.Delete(id);
-
-            if (!deleted) {
-                throw new TodoNotFoundException("Not found");
-            }
-
-            return true;
+            await _todoRepository.Delete(id);
         }
 
     }
