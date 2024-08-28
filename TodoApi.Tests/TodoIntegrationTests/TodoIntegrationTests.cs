@@ -10,14 +10,14 @@ using TodoApi.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace TodoApi.Tests
+namespace TodoApi.Tests.TodoIntegrationTests
 {
-    public class TodoControllerTest : IClassFixture<WebApplicationFactory<Program>>
+    public class TodoIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly WebApplicationFactory<Program> _factory;
         private readonly ITestOutputHelper _output;
 
-        public TodoControllerTest(WebApplicationFactory<Program> factory, ITestOutputHelper output)
+        public TodoIntegrationTests(WebApplicationFactory<Program> factory, ITestOutputHelper output)
         {
             _factory = factory;
             _output = output;
@@ -46,31 +46,25 @@ namespace TodoApi.Tests
         {
             var client = _factory.CreateClient();
 
-            //var httpContent = new StringContent(JsonSerializer.Serialize(todopayload));
-            //var response = await client.PostAsync("/api/Todo", httpContent);
-
-            //var payload = JsonContent.Create(todopayload);
-
-            var response = await client.PostAsJsonAsync("/api/Todo", new
+            var payload = new
             {
                 name = "Test",
                 isComplete = true
-            });
+            };
 
-            //response.EnsureSuccessStatusCode();
-            //response.StatusCode.Should().Be(HttpStatusCode.Created);
-
-            //var body = await response.Content.ReadAsStringAsync();
+            var response = await client.PostAsJsonAsync("/api/Todo", payload);
 
             var todo = await JsonSerializer.DeserializeAsync<Todo>(
-                await response.Content.ReadAsStreamAsync(), 
+                await response.Content.ReadAsStreamAsync(),
                 new JsonSerializerOptions(JsonSerializerDefaults.Web)
             );
 
-            _output.WriteLine($"todo: {todo}");
             _output.WriteLine($"Id: {todo?.Id}");
             _output.WriteLine($"Name: {todo?.Name}");
             _output.WriteLine($"IsComplete: {todo?.IsComplete}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            Assert.Equal(payload.name, todo?.Name);
         }
     }
 }
