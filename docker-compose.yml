@@ -1,0 +1,6 @@
+services:
+  todoapi:
+    image: ${DOCKER_REGISTRY-}todoapi
+    build:
+      context: .
+      dockerfile: TodoApi/Dockerfile
