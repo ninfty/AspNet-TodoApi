@@ -4,3 +4,7 @@ services:
     build:
       context: .
       dockerfile: TodoApi/Dockerfile
+
+  db:
+    container_name: postgres-db
+    image: postgres:16
