@@ -1,30 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TodoApi.Database;
 using TodoApi.Exceptions;
 using TodoApi.Models;
 
 namespace TodoApi.Repositories
 {
-    public class TodoRepository(TodoContext context) : ITodoRepository
+    public class TodoRepository(AppDbContext context) : ITodoRepository
     {
         public async Task<List<Todo>> GetAll()
         {
-            return await context.TodoItems.ToListAsync();
+            return await context.Todos.ToListAsync();
         }
 
         public async Task<Todo?> GetById(Guid id)
         {
-            return await context.TodoItems.FindAsync(id);
+            return await context.Todos.FindAsync(id);
         }
 
         public async Task Insert(Todo todo)
         {
-            await context.TodoItems.AddAsync(todo);
+            await context.Todos.AddAsync(todo);
             await context.SaveChangesAsync();
         }
 
         public async Task Update(Guid id, Todo fields)
         {
-            var todo = await context.TodoItems.FindAsync(id);
+            var todo = await context.Todos.FindAsync(id);
 
             if (todo is null) {
                 throw new TodoNotFoundException();
@@ -38,14 +39,14 @@ namespace TodoApi.Repositories
 
         public async Task Delete(Guid id)
         {
-            var todo = await context.TodoItems.FindAsync(id);
+            var todo = await context.Todos.FindAsync(id);
 
             if (todo == null)
             {
                 throw new TodoNotFoundException();
             }
 
-            context.TodoItems.Remove(todo);
+            context.Todos.Remove(todo);
             //_context.TodoItems.RemoveRange(_context.TodoItems.Where(c => c.Id == id));
             await context.SaveChangesAsync();
 
