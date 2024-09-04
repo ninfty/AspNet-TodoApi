@@ -6,23 +6,16 @@ using TodoApi.Repositories;
 
 namespace TodoApi.Services
 {
-    public class TodoService : ITodoService
+    public class TodoService(ITodoRepository todoRepository) : ITodoService
     {
-        private ITodoRepository _todoRepository;
-        
-        public TodoService(ITodoRepository todoRepository)
-        {
-            _todoRepository = todoRepository;
-        }
-
         public async Task<List<Todo>> ListTodoItems()
         {
-            return await _todoRepository.GetAll();
+            return await todoRepository.GetAll();
         }
 
         public async Task<Todo> FindTodoItem(Guid id)
         {
-            var todo = await _todoRepository.GetById(id);
+            var todo = await todoRepository.GetById(id);
 
             if (todo == null) {
                 throw new TodoNotFoundException();
@@ -33,17 +26,17 @@ namespace TodoApi.Services
 
         public async Task CreateTodoItem(Todo todo)
         {
-            await _todoRepository.Insert(todo);
+            await todoRepository.Insert(todo);
         }
 
         public async Task UpdateTodoItem(Guid id, Todo todo)
         {
-            await _todoRepository.Update(id, todo);
+            await todoRepository.Update(id, todo);
         }
 
         public async Task DeleteTodoItem(Guid id)
         {
-            await _todoRepository.Delete(id);
+            await todoRepository.Delete(id);
         }
 
     }

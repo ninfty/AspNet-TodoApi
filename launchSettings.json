@@ -4,7 +4,16 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "todoapi": "StartDebugging"
+        "todoapi": "StartDebugging",
+        "db": "StartWithoutDebugging"
+      }
+    },
+    "profile1": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "db": "StartWithoutDebugging",
+        "todoapi": "StartWithoutDebugging"
       }
     }
   }
