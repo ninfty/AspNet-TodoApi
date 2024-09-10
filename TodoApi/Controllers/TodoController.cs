@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.DTOs;
+using TodoApi.Exceptions;
 using TodoApi.Models;
 using TodoApi.Services;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -46,7 +47,7 @@ namespace TodoApi.Controllers
                 return _mapper.Map<TodoResponseDTO>(
                    await _todoItemsService.FindTodoItem(id)
                 );
-            } catch (Exception) {
+            } catch (TodoNotFoundException) {
                 return NotFound();
             }
         }
@@ -61,7 +62,7 @@ namespace TodoApi.Controllers
 
                 return NoContent();
             }
-            catch (Exception) {
+            catch (TodoNotFoundException) {
                 return NotFound();
             }
         }

@@ -10,12 +10,12 @@ namespace TodoApi.Services
     {
         public async Task<List<Todo>> ListTodoItems()
         {
-            return await todoRepository.GetAll();
+            return await todoRepository.GetAllAsync();
         }
 
         public async Task<Todo> FindTodoItem(Guid id)
         {
-            var todo = await todoRepository.GetById(id);
+            var todo = await todoRepository.GetByIdAsync(id);
 
             if (todo == null) {
                 throw new TodoNotFoundException();
@@ -26,17 +26,26 @@ namespace TodoApi.Services
 
         public async Task CreateTodoItem(Todo todo)
         {
-            await todoRepository.Insert(todo);
+            await todoRepository.InsertAsync(todo);
         }
 
-        public async Task UpdateTodoItem(Guid id, Todo todo)
+        public async Task UpdateTodoItem(Guid id, Todo fields)
         {
-            await todoRepository.Update(id, todo);
+            var todo = await todoRepository.GetByIdAsync(id);
+
+            if (todo == null)
+            {
+                throw new TodoNotFoundException();
+            }
+
+            fields.Id = id;
+
+            await todoRepository.UpdateAsync(fields);
         }
 
         public async Task DeleteTodoItem(Guid id)
         {
-            await todoRepository.Delete(id);
+            await todoRepository.DeleteAsync(id);
         }
 
     }
