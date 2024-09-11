@@ -5,7 +5,7 @@ namespace TodoApi.Repositories
 {
     public class BaseRepository<T>(AppDbContext context) : IBaseRepository<T> where T : class
     {
-        public DbSet<T> entity => context.Set<T>();
+        public DbSet<T> Entity => context.Set<T>();
 
         public async Task DeleteAsync(object id)
         {
@@ -13,7 +13,7 @@ namespace TodoApi.Repositories
 
             if (entity != null)
             {
-                this.entity.Remove(entity);
+                Entity.Remove(entity);
 
                 await context.SaveChangesAsync();
             }
@@ -21,7 +21,7 @@ namespace TodoApi.Repositories
 
         public async Task<List<T>> GetAllAsync()
         {
-            return await entity.ToListAsync();
+            return await Entity.ToListAsync();
         }
 
         public async Task<T?> GetByIdAsync(object id)
@@ -31,7 +31,7 @@ namespace TodoApi.Repositories
 
         public async Task InsertAsync(T entity)
         {
-            this.entity.Add(entity);
+            Entity.Add(entity);
             await context.SaveChangesAsync();
         }
 

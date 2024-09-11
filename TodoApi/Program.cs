@@ -4,13 +4,18 @@ using TodoApi.Database;
 using TodoApi.Models;
 using TodoApi.Repositories;
 using TodoApi.Services;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseInMemoryDatabase("DBConnection"));
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseInMemoryDatabase("DBConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("TodoDB")));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -18,7 +23,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ITodoService, TodoService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<TokenService>();
 
 builder.Services.AddAutoMapper(typeof(ConfigurationMapping));
 

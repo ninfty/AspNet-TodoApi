@@ -2,24 +2,18 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.DTOs;
 using TodoApi.Models;
+using TodoApi.Services;
 
 namespace TodoApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(IAuthService authService) : ControllerBase
     {
-        public AuthController()
-        {
-
-        }
-
         [HttpPost]
         public async Task<ActionResult<string>> Post(LoginRequestDTO loginRequestDTO)
         {
-            //var todo = _mapper.Map<Todo>(todoRequestDTO);
-
-            //await _todoItemsService.CreateTodoItem(todo);
+            await authService.LoginUser(loginRequestDTO.Email, loginRequestDTO.Password);
 
             return Ok();
         }

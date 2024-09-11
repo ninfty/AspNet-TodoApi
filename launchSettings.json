@@ -13,7 +13,7 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "db": "StartWithoutDebugging",
-        "todoapi": "StartWithoutDebugging"
+        "todoapi": "StartDebugging"
       }
     }
   }

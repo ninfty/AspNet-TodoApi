@@ -10,6 +10,11 @@ EXPOSE 8081
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+RUN dotnet tool install -g dotnet-ef
+ENV PATH $PATH:/root/.dotnet/tools
+RUN dotnet ef --version
+
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["TodoApi/TodoApi.csproj", "TodoApi/"]
@@ -22,6 +27,9 @@ RUN dotnet build "./TodoApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./TodoApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# RUN dotnet tool install --global dotnet-ef
+# ENV PATH="${PATH}:/root/.dotnet/tools"
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
