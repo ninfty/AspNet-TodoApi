@@ -4,9 +4,9 @@ using System.Security.Claims;
 using System.Text;
 using TodoApi.Models;
 
-namespace TodoApi.Services
+namespace TodoApi.Utils
 {
-    internal sealed class TokenService(IConfiguration configuration)
+    internal sealed class TokenProvider(IConfiguration configuration)
     {
         public string Create(User user)
         {

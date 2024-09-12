@@ -6,6 +6,7 @@ using TodoApi.Repositories;
 using TodoApi.Services;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using System.Configuration;
+using TodoApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,8 @@ builder.Services.AddScoped<ITodoService, TodoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddSingleton<TokenService>();
+builder.Services.AddSingleton<TokenProvider>();
+builder.Services.AddSingleton<PasswordHasher>();
 
 builder.Services.AddAutoMapper(typeof(ConfigurationMapping));
 
