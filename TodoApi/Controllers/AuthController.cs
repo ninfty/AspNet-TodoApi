@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.DTOs;
 using TodoApi.Models;
@@ -6,16 +7,32 @@ using TodoApi.Services;
 
 namespace TodoApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api")]
     [ApiController]
-    public class AuthController(IAuthService authService) : ControllerBase
+    public class AuthController(IAuthService authService, IMapper mapper) : ControllerBase
     {
-        [HttpPost]
-        public async Task<ActionResult<string>> Post(LoginRequestDTO loginRequestDTO)
+        [HttpPost("Login")]
+        public async Task<ActionResult<string>> Login(LoginRequestDTO loginRequestDTO)
         {
-            await authService.LoginUser(loginRequestDTO.Email, loginRequestDTO.Password);
+            try
+            {
+                string token = await authService.LoginUser(loginRequestDTO.Email, loginRequestDTO.Password);
 
-            return Ok();
+                return Ok(token);
+            } catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("Register")]
+        public async Task<ActionResult<string>> Register(RegisterRequestDTO registerRequestDTO)
+        {
+            var user = mapper.Map<User>(registerRequestDTO);
+
+            await authService.RegisterUser(user);
+
+            return Created();
         }
     }
 }

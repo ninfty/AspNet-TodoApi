@@ -1,19 +1,31 @@
-﻿namespace TodoApi.Utils
+﻿using System.Security.Cryptography;
+
+namespace TodoApi.Utils
 {
     public sealed class PasswordHasher
     {
-        private const int saltLenght = 16;
-        private const int hashLenght = 32;
+        private const int saltLength = 16;
+        private const int hashLength = 32;
         private const int iterations = 10000;
+        private static readonly HashAlgorithmName algorithm = HashAlgorithmName.SHA512;
 
-        public string Hash()
+        public string Hash(string password)
         {
-            return "";
+            byte[] salt = RandomNumberGenerator.GetBytes(saltLength);
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, algorithm, hashLength);
+
+            return $"{Convert.ToHexString(hash)}-{Convert.ToHexString(salt)}";
         }
 
-        public bool Verify()
+        public bool Verify(string password, string passwordHash)
         {
-            return false;
+            string[] parts = passwordHash.Split('-');
+            byte[] hash = Convert.FromHexString(parts[0]);
+            byte[] salt = Convert.FromHexString(parts[1]);
+
+            byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, algorithm, hashLength);
+
+            return CryptographicOperations.FixedTimeEquals(hash, inputHash);
         }
     }
 }

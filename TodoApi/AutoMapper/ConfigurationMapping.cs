@@ -10,6 +10,7 @@ namespace TodoApi.AutoMapper
         {
             CreateMap<Todo, TodoResponseDTO>();
             CreateMap<TodoRequestDTO, Todo>();
+            CreateMap<RegisterRequestDTO, User>();
         }
     }
 }

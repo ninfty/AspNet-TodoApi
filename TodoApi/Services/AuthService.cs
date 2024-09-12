@@ -4,7 +4,7 @@ using TodoApi.Utils;
 
 namespace TodoApi.Services
 {
-    internal sealed class AuthService(IUserRepository userRepository, TokenProvider tokenProvider): IAuthService
+    internal sealed class AuthService(IUserRepository userRepository, TokenProvider tokenProvider, PasswordHasher passwordHasher): IAuthService
     {
         public async Task<string> LoginUser(string email, string password)
         {
@@ -12,13 +12,24 @@ namespace TodoApi.Services
 
             if (user == null)
             {
-                throw new Exception("User not found");
+                throw new Exception("User does not exist");
             }
 
-            //check password
+            bool verified = passwordHasher.Verify(password, user.Password);
 
-            //string token = tokenService.Create(user);
-            return "testtoken";
+            if (!verified)
+            {
+                throw new Exception("Invalid credentials");
+            }
+
+            return tokenProvider.Create(user);
+        }
+
+        public async Task RegisterUser(User user)
+        {
+            user.Password = passwordHasher.Hash(user.Password);
+
+            await userRepository.InsertAsync(user);
         }
     }
 }
