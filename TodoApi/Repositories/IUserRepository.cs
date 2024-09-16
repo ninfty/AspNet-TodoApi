@@ -4,6 +4,6 @@ namespace TodoApi.Repositories
 {
     public interface IUserRepository : IBaseRepository<User>
     {
-        public Task<User?> GetByEmail(string email);
+        abstract Task<User?> GetByEmail(string email);
     }
 }

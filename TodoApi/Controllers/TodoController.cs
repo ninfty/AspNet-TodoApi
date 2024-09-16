@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TodoApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TodoController(ITodoService todoService, IMapper mapper) : ControllerBase
@@ -22,8 +24,6 @@ namespace TodoApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoResponseDTO>>> GetTodoItems()
         {
-            //return (await _todoItemsService.ListTodoItems()).Select(x => _mapper.Map<TodoResponseDTO>(x)).ToList();
-
             var todos = await todoService.ListTodoItems();
 
             return Ok(mapper.Map<List<TodoResponseDTO>>(todos));
